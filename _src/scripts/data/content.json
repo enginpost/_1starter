@@ -1,0 +1,14 @@
+{
+    "audience": "World",
+    "greeting": "Hello",
+    "favorites":[
+        {
+            "item":"book",
+            "val":"Jungle Book"
+        },
+        {
+            "item": "color",
+            "val": "blue"
+        }
+    ]
+}

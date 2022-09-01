@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style></style>
+<body>
+    <h2>Page HTML Template Loaded</h2>
+    <div id="sample-page-template-container"></div>
+
+    <h2>External HTML Template Loaded</h2>
+    <div id="sample-external-template-container"></div>
+
+    <h2>Page JS Template Loaded</h2>
+    <div id="sample-js-template-container"></div>
+
+    <template id="sample-partial">
+        <span class="greeting">${content.greeting}</span>
+        <span class="audience">${content.audience}</span>
+        <!-- No clever way I could figure out to loop through arrays here -->
+    </template>
+
+    <script type="module">
+        import { sample_template } from "./scripts/_templates/sample.template.js";
+
+        const content = {
+            "audience":"World",
+            "greeting": "Hello",
+            "favorites": [
+                {
+                    "item": "book",
+                    "val": "Jungle Book"
+                },
+                {
+                    "item": "color",
+                    "val": "blue"
+                }
+            ]
+        };
+        //Page HTML Template Loading (still a bit unsafe due to eval)
+        /*  Notice the <template> tag above. This HTML5 doesn't visibly display by default.
+            We grab it and then "eval" the innerHTML of it by wrapping it in the ` symbol.
+            This causes it to be processed as a string literal and expressions are then
+            processed. As long as the block of code has access to the proper data object, 
+            in this case "content", then the variables are injected into th template.
+            The js... eval ...method is considered "unsafe."
+        */
+            var html_template_tag = document.querySelector("#sample-partial").innerHTML;
+            document.querySelector("#sample-page-template-container").innerHTML =
+                eval('`' + html_template_tag + '`');
+
+        //External HTML Template Loading (a bit unsafe due to eval)
+        /*  This loads some HTML from a file. The file itself contains both HTML with
+            embedded expressions. The rest works like the above example with the same
+            risks involved in manually calling the eval method.
+        */
+            fetch('/scripts/_templates/sample-template.partial.html')
+            .then( response =>{
+                return response.text();
+            })
+            .then(template =>{
+                document.querySelector("#sample-external-template-container").innerHTML = 
+                eval( '`' + template + '`');
+            });
+        
+        //External JS-based HTML partial (most safe)
+        /*  This is the ES6 JavaScript module approach. It requires that the script 
+            "type" attribute is set to "module". At the top of this code block, notice
+            that there is an "import" statement. the function name matches the exported
+            function from the JS import file. For this to work, you just call the function
+            and pass it the data. Take a look at that JS file to understand how it needs to
+            be setup in order to take in data and return the template literal string so it
+            is processed natively by JavaScript without calling the risky eval method. The
+            code here is also much shorter. You just have to remember to export the function
+            and import it in the JS where you want to reuse it. You don't have to export a 
+            function if you put all of your code in the same file, but the file will get more
+            busy and less clear to read later.
+        */
+            document.querySelector("#sample-js-template-container").innerHTML =
+                sample_template(content);
+    </script>
+</body>
+</html>

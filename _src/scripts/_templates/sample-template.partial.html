@@ -1,0 +1,15 @@
+<!-- You get HTML intellisense in VSCode here, but not for JS or the expressions -->
+<div class="sample-external-html">
+    ${content.greeting}, ${content.audience}!
+    <h3>Favorites</h3>
+    <ul>
+        ${content.favorites.map( favorite =>{ return `
+    
+        <li>
+            <span class="favorite-item">${favorite.item}</span>:
+            <span class="favorite-value">${favorite.val}</span>
+        </li>
+    
+        `}).join('')}
+    </ul>
+</div>
